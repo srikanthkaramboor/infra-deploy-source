@@ -1,4 +1,10 @@
 #source
+provider "aws" {
+  profile = "default"
+  region  = "us-east-1"
+}
+
+
 resource "aws_instance" "test-ec2-machin" {
   ami           = "ami-0263e4deb427da90e"
   instance_type = "t3.micro"
@@ -148,10 +154,6 @@ terraform {
   required_version = ">= 0.14.9"
 }
 
-# provider "aws" {
-#   profile = "default"
-#   region  = "us-east-1"
-# }
 
 #outputs.tf
 output "lb_dns_url" {
