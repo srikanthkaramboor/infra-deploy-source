@@ -58,7 +58,7 @@ workflows:
     - terraform/destroy:
         attach-workspace: true
         context: terraformenv1
-        persist-workspace: true
+        #persist-workspace: true
         filters:
           branches:
             only: main
