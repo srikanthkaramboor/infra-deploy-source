@@ -1,9 +1,3 @@
-#Source
-provider "aws" {
-  region = "us-east-1"
-  access_key = "AKIA6C4IMDBPWWHQBOOR"
-  secret_key = "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"
-}
 
 resource "aws_instance" "test-ec2-machin" {
   ami           = "ami-0263e4deb427da90e"
