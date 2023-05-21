@@ -43,7 +43,7 @@ parameters:
 #           - terraform/plan
 
 workflows:
-  deploy_infra_demo:
+  infra-deploy-source:
     when: <<pipeline.parameters.run_workflow_build>>
     jobs:
     - terraform/validate:
@@ -55,7 +55,7 @@ workflows:
         persist-workspace: true
         requires:
         - terraform/validate
-    - terraform/apply:
+    - terraform/destroy:
         attach-workspace: true
         context: terraformenv1
         persist-workspace: true
