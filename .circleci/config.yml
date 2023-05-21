@@ -1,0 +1,104 @@
+---
+# https://circleci.com/developer/orbs/orb/circleci/terraform
+version: '2.1'
+orbs:
+  
+  terraform: circleci/terraform@3.2.0
+
+
+
+parameters:
+  run_workflow_build:
+    default: false
+    type: boolean
+
+  # run_workflow_test:
+  #   default: false
+  #   type: boolean
+
+  # run_workflow_deploy:
+  #   default: false
+  #   type: boolean
+
+# workflows:
+#   version: 2
+#   build:
+#     when: pipeline.parameters.run_workflow_build
+#     jobs:
+#       - terraform/plan
+#   test:
+#     when: pipeline.parameters.run_workflow_build
+#     jobs:
+#       - terraform/validate
+#           context: terraform
+#   deploy:
+#     when: pipeline.parameters.run_workflow_build
+#     jobs:
+#       - terraform/apply
+#           context: terraform
+#           filters:
+#             branches:
+#               only: master
+#           requires:
+#           - terraform/plan
+
+workflows:
+  deploy_infra_demo:
+    when: <<pipeline.parameters.run_workflow_build>>
+    jobs:
+    - terraform/validate:
+        checkout: true
+        context: terraform
+    - terraform/plan:
+        checkout: true
+        context: terraform
+        persist-workspace: true
+        requires:
+        - terraform/validate
+    - terraform/apply:
+        attach-workspace: true
+        context: terraform
+        persist-workspace: true
+        filters:
+          branches:
+            only: main
+        requires:
+        - terraform/plan
+
+build:
+  working_directory: /tmp
+  steps:
+    - run:
+        name: Creating Dummy Artifacts
+        command: |
+          echo "my artifact file" > /tmp/art-1;
+          mkdir /tmp/artifacts;
+          echo "my artifact files in a dir" > /tmp/artifacts/art-2;
+
+    - store_artifacts:
+        path: /tmp/art-1
+        destination: artifact-file
+
+    - store_artifacts:
+        path: /tmp/artifacts
+
+# workflows:
+#   deploy_infra:
+#     jobs:
+#     - terraform/validate:
+#         checkout: true
+#         context: terraform
+#     - terraform/plan:
+#         checkout: true
+#         context: terraform
+#         persist-workspace: true
+#         requires:
+#         - terraform/validate
+#     - terraform/apply:
+#         attach-workspace: true
+#         context: terraform
+#         filters:
+#           branches:
+#             only: master
+#         requires:
+#         - terraform/plan
