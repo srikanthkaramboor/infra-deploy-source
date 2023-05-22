@@ -56,8 +56,8 @@ workflows:
         requires:
         - terraform/validate
     - terraform/destroy:
-        checkout: true
-        #attach-workspace: true
+        #checkout: true
+        attach-workspace: false
         context: terraformenv1
         #persist-workspace: true
         filters:
