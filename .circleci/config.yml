@@ -42,19 +42,23 @@ workflows:
     jobs:
       - terraform/init:
           workspace: stg
+          context: terraformenv1
       - terraform/plan:
           is-destroy: true
           requires:
             - terraform/init
           workspace: stg
+          context: terraformenv1
       - hold:
           requires:
             - terraform/plan
           type: approval
+          context: terraformenv1
       - terraform/apply:
           requires:
             - hold
           workspace: stg
+          context: terraformenv1
 
     # - terraform/validate:
     #     checkout: true
