@@ -12,59 +12,70 @@ parameters:
     default: false
     type: boolean
 
-  # run_workflow_test:
-  #   default: false
-  #   type: boolean
-
-  # run_workflow_deploy:
-  #   default: false
-  #   type: boolean
-
+  
+# orbs:
+#   terraform: mafuyuk/terraform@1.0.0
+# version: 2.1
 # workflows:
-#   version: 2
-#   build:
-#     when: pipeline.parameters.run_workflow_build
+#   destroy:
 #     jobs:
-#       - terraform/plan
-#   test:
-#     when: pipeline.parameters.run_workflow_build
-#     jobs:
-#       - terraform/validate
-#           context: terraform
-#   deploy:
-#     when: pipeline.parameters.run_workflow_build
-#     jobs:
-#       - terraform/apply
-#           context: terraform
-#           filters:
-#             branches:
-#               only: master
+#       - terraform/init:
+#           workspace: stg
+#       - terraform/plan:
+#           is-destroy: true
 #           requires:
-#           - terraform/plan
+#             - terraform/init
+#           workspace: stg
+#       - hold:
+#           requires:
+#             - terraform/plan
+#           type: approval
+#       - terraform/apply:
+#           requires:
+#             - hold
+#           workspace: stg
+
 
 workflows:
   infra-deploy-source:
     when: <<pipeline.parameters.run_workflow_build>>
+  destroy:
     jobs:
-    - terraform/validate:
-        checkout: true
-        context: terraformenv1
-    - terraform/plan:
-        checkout: true
-        context: terraformenv1
-        persist-workspace: true
-        requires:
-        - terraform/validate
-    - terraform/destroy:
-        #checkout: true
-        attach-workspace: false
-        context: terraformenv1
-        #persist-workspace: true
-        filters:
-          branches:
-            only: main
-        requires:
-        - terraform/plan
+      - terraform/init:
+          workspace: stg
+      - terraform/plan:
+          is-destroy: true
+          requires:
+            - terraform/init
+          workspace: stg
+      - hold:
+          requires:
+            - terraform/plan
+          type: approval
+      - terraform/apply:
+          requires:
+            - hold
+          workspace: stg
+
+    # - terraform/validate:
+    #     checkout: true
+    #     context: terraformenv1
+    # - terraform/plan:
+    #     checkout: true
+    #     context: terraformenv1
+    #     persist-workspace: true
+    #     requires:
+    #     - terraform/validate
+    # - terraform/destroy:
+    #     #checkout: true
+    #     attach-workspace: false
+    #     context: terraformenv1
+    #     #persist-workspace: true
+    #     filters:
+    #       branches:
+    #         only: main
+    #     requires:
+    #     - terraform/plan
 
 build:
   working_directory: /tmp
