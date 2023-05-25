@@ -39,7 +39,6 @@ parameters:
 workflows:
   infra-deploy-source:
     when: <<pipeline.parameters.run_workflow_build>>
-  destroy:
     jobs:
       - terraform/init:
           workspace: stg
