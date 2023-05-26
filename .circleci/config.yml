@@ -16,20 +16,20 @@ workflows:
   infra-deploy-source:
     when: <<pipeline.parameters.run_workflow_build>>
     jobs:
-      - plan-destroy:
-          steps:
-            - attach_workspace:
-                at: .
-            - run:
-                context: terraformenv1
-                name: terraform create destroy plan
-                command: |
-                  terraform plan -destroy -out tfdestroy 
-            - persist_to_workspace:
-                root: .
-                paths:
-                  - .
-      - destroy:
+      plan-destroy:
+        steps:
+          - attach_workspace:
+              at: .
+          - run:
+              context: terraformenv1
+              name: terraform create destroy plan
+              command: |
+                terraform plan -destroy -out tfdestroy 
+          - persist_to_workspace:
+              root: .
+              paths:
+                - .
+        destroy:
           steps:
             - attach_workspace:
                 at: .
