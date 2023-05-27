@@ -13,158 +13,20 @@ parameters:
     type: boolean
   
 workflows:
-  infra-deploy-source:
-    #when: <<pipeline.parameters.run_workflow_build>>
+  deploy_infra_demo:
+    when: <<pipeline.parameters.run_workflow_build>>
     jobs:
       plan-destroy:
         steps:
           - attach_workspace:
               at: .
           - run:
-              context: terraformenv1
+              context:terraformenv1
               name: terraform create destroy plan
               command: |
-                terraform plan -destroy -out tfdestroy 
+                terraform plan -destroy -out tfdestroy -var-file terraform.tfvars
           - persist_to_workspace:
               root: .
               paths:
                 - .
-        destroy:
-          steps:
-            - attach_workspace:
-                at: .
-            - run:
-                context: terraformenv1
-                name: terraform destroy
-                command: |
-                  terraform apply -auto-approve tfdestroy
-
-# orbs:
-#   terraform: mafuyuk/terraform@1.0.0
-# version: 2.1
-# workflows:
-#   destroy:
-#     jobs:
-#       - terraform/init:
-#           workspace: stg
-#       - terraform/plan:
-#           is-destroy: true
-#           requires:
-#             - terraform/init
-#           workspace: stg
-#       - hold:
-#           requires:
-#             - terraform/plan
-#           type: approval
-#       - terraform/apply:
-#           requires:
-#             - hold
-#           workspace: stg
-
-
-# workflows:
-#   infra-deploy-source:
-#     when: <<pipeline.parameters.run_workflow_build>>
-#       jobs:
-#         plan-destroy:
-#           steps:
-#             - attach-workspace:
-#                 at: .
-#             - run:
-#                 context: terraformenv1
-#                 name: terraform create destroy plan-destroy
-#                 command: |
-#                   terraform plan -destroy -out tfdestroy
-#             - persist-workspace:
-#                 root: .
-#                 paths:
-#                   - .
-
-#         destroy:
-#           steps:
-#             - attach-workspace:
-#                 at: .
-#             - run:
-#                 context: terraformenv1
-#                 name: terraform destroy
-#                 command: |
-#                   terraform apply -auto-approve tfdestroy
-
-    # jobs:
-    #   - terraform/init:
-    #       #workspace: stg
-    #       context: terraformenv1
-    #   - terraform/plan:
-    #       is-destroy: true
-    #       requires:
-    #         - terraform/init
-    #       #workspace: stg
-    #       context: terraformenv1
-    #   - hold:
-    #       requires:
-    #         - terraform/plan
-    #       type: approval
-    #       context: terraformenv1
-    #   - terraform/apply:
-    #       requires:
-    #         - hold
-    #       #workspace: stg
-    #       context: terraformenv1
-
-    # - terraform/validate:
-    #     checkout: true
-    #     context: terraformenv1
-    # - terraform/plan:
-    #     checkout: true
-    #     context: terraformenv1
-    #     persist-workspace: true
-    #     requires:
-    #     - terraform/validate
-    # - terraform/destroy:
-    #     #checkout: true
-    #     attach-workspace: false
-    #     context: terraformenv1
-    #     #persist-workspace: true
-    #     filters:
-    #       branches:
-    #         only: main
-    #     requires:
-    #     - terraform/plan
-
-# build:
-#   working_directory: /tmp
-#   steps:
-#     - run:
-#         name: Creating Dummy Artifacts
-#         command: |
-#           echo "my artifact file" > /tmp/art-1;
-#           mkdir /tmp/artifacts;
-#           echo "my artifact files in a dir" > /tmp/artifacts/art-2;
-
-#     - store_artifacts:
-#         path: /tmp/art-1
-#         destination: artifact-file
-
-#     - store_artifacts:
-#         path: /tmp/artifacts
-
-# workflows:
-#   deploy_infra:
-#     jobs:
-#     - terraform/validate:
-#         checkout: true
-#         context: terraform
-#     - terraform/plan:
-#         checkout: true
-#         context: terraform
-#         persist-workspace: true
-#         requires:
-#         - terraform/validate
-#     - terraform/apply:
-#         attach-workspace: true
-#         context: terraform
-#         filters:
-#           branches:
-#             only: master
-#         requires:
-#         - terraform/plan
+          
