@@ -17,15 +17,14 @@ workflows:
     when: <<pipeline.parameters.run_workflow_build>>
     jobs:
       plan-destroy:
+        context : terraformenv1
         steps:
           - attach_workspace:
               at: .
           - run:
-              context:terraformenv1
               name: terraform create destroy plan
               command: |
-                terraform plan -destroy -out tfdestroy -var-file terraform.tfvars
-          - persist_to_workspace:
+                terraform plan -destroy -out tfdestroy 
               root: .
               paths:
                 - .
