@@ -11,21 +11,67 @@ parameters:
   run_workflow_build:
     default: false
     type: boolean
-  
+
+
+jobs:
+  plan-destroy:
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform create destroy plan
+          command: |
+            terraform plan -destroy -out tfdestroy 
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  destroy:
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform destroy
+          command: |
+            terraform apply -auto-approve tfdestroy
 workflows:
+  version: 2
   infra-deploy-source:
-    #when: <<pipeline.parameters.run_workflow_build>>
+    when: <<pipeline.parameters.run_workflow_build>>
     jobs:
-      plan-destroy:
-        context : terraformenv1
-        steps:
-          - attach_workspace:
-              at: .
-          - run:
-              name: terraform create destroy plan
-              command: |
-                terraform plan -destroy -out tfdestroy 
-              root: .
-              paths:
-                - .
+      - plan-destroy:
+          context : terraformenv1
+      - hold-destroy:
+          context : terraformenv1
+          type: approval
+          requires:
+            - plan-destroy
+      - destroy:
+          context : terraformenv1
+          requires:
+            - hold-destroy
+
+
+
+
+
+
+  
+# workflows:
+#   infra-deploy-source:
+#     #when: <<pipeline.parameters.run_workflow_build>>
+#     jobs:
+#       plan-destroy:
+#         context : terraformenv1
+#         steps:
+#           - attach_workspace:
+#               at: .
+#           - run:
+#               name: terraform create destroy plan
+#               command: |
+#                 terraform plan -destroy -out tfdestroy 
+#               root: .
+#               paths:
+#                 - .
           
