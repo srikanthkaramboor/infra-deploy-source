@@ -9,7 +9,6 @@ parameters:
     default: false
     type: boolean
 
-version: '2.1'
 jobs:
   init:
     docker:
@@ -34,7 +33,7 @@ jobs:
       - run: terraform destroy -auto-approve 
 
 workflows:
-  test:
+  infra-deploy-source:
     jobs:
       - init
       # - hold:
