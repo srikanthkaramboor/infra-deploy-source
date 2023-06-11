@@ -15,6 +15,7 @@ jobs:
       - image: hashicorp/terraform
     steps:
       - checkout
+      - context: terraformenv1
       - run: terraform init
       - run: terraform plan
       #- run: terraform apply -auto-approve
@@ -30,12 +31,13 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - context: terraformenv1
       - run: terraform destroy -auto-approve 
 
 workflows:
   infra-deploy-source:
     jobs:
-      - plan
+      - init
       # - hold:
       #     type: approval
       #     requires:
