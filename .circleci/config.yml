@@ -35,6 +35,7 @@ jobs:
 
 workflows:
   infra-deploy-source:
+    when: <<pipeline.parameters.run_workflow_build>>
     jobs:
       - init:
           context: terraformenv1
